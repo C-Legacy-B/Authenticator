@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Authenticator</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#071b3d">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Authenticator">
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;font-family:Arial,sans-serif;background:linear-gradient(135deg,#071b3d,#1255a0);color:#fff}
+.card{width:min(390px,100%);padding:32px 25px;border-radius:26px;text-align:center;background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(18px);box-shadow:0 25px 60px rgba(0,0,0,.3)}
+.logo{width:64px;height:64px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;border:2px solid #f4cf58;color:#f4cf58;font-size:27px;font-weight:900}
+h1{margin:0 0 7px;font-size:28px}.sub{color:#c9d8ed;font-size:14px;margin-bottom:25px}
+.code{font-size:40px;letter-spacing:9px;font-weight:900;color:#f4cf58;margin:20px 0}
+.timer{font-size:14px;color:#d7e2f2}.bar{height:6px;background:rgba(255,255,255,.15);border-radius:10px;overflow:hidden;margin-top:18px}.progress{height:100%;width:100%;background:#f4cf58;transition:width 1s linear}
+.badge{display:inline-block;margin-top:20px;padding:7px 12px;border-radius:20px;background:rgba(244,207,88,.13);border:1px solid rgba(244,207,88,.3);color:#ffe9a0;font-size:12px}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="logo">A</div>
+  <h1>Authenticator</h1>
+  <p class="sub">Temporary 6-digit demonstration code</p>
+  <div id="code" class="code">------</div>
+  <div id="timer" class="timer">Generating code…</div>
+  <div class="bar"><div id="progress" class="progress"></div></div>
+  <div class="badge">New code every 60 seconds</div>
+</main>
+<script>
+(function(){
+  const codeEl=document.getElementById('code');
+  const timerEl=document.getElementById('timer');
+  const progressEl=document.getElementById('progress');
+  let remaining=60;
+  function generate(){
+    codeEl.textContent=String(Math.floor(100000+Math.random()*900000));
+    remaining=60;
+  }
+  generate();
+  setInterval(function(){
+    remaining--;
+    if(remaining<=0) generate();
+    timerEl.textContent='New code in '+remaining+'s';
+    progressEl.style.width=(remaining/60*100)+'%';
+  },1000);
+})();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('service-worker.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
